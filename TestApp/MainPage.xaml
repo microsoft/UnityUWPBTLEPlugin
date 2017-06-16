@@ -1,0 +1,59 @@
+﻿<Page
+    x:Class="TestApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TestApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"   
+    Loaded="OnLoaded">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="500"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <Button Content="Enumerate" Click="OnEnumerate" Margin="20, 20, 0, 20"/>
+            <Button Content="Connect service" Click="OnConnectService" Margin="20, 0, 0, 20"/>
+            <Button Content="Color Index Test" Click="OnColorIndexTest" Margin="20, 0, 0, 20"/>
+            <Button Content="Color RGB Test" Click="OnColorRGBTest" Margin="20, 0, 0, 20"/>
+            <Button Content="Internal motor Test" Click="OnBrickMotorTest" Margin="20, 0, 0, 20"/>
+            <Button Content="Port C single motor Test" Click="OnSingleMotorTest" Margin="20, 0, 0, 20"/>
+            <Button Content="Port C single timed motor Test" Click="OnTimedMotorTest" Margin="20, 0, 0, 20"/>
+            <Button Content="Port C single motor tach Test" Click="OnTimedMotorTachTest" Margin="20, 0, 0, 20"/>
+            <Button Content="Port D Read vision sensor " Click="OnPortDVisionTest" Margin="20, 0, 0, 20"/>
+        </StackPanel>
+        <ListBox x:Name="Feedback" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" >
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+            <ListBoxItem Content="Feedback zone"/>
+        </ListBox>
+    </Grid>
+</Page>
