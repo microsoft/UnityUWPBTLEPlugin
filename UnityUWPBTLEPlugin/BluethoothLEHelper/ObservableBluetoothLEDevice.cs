@@ -26,7 +26,7 @@ namespace UnityUWPBTLEPlugin
     /// <summary>
     /// Wrapper around <see cref="BluetoothLEDevice"/> to make it easier to use
     /// </summary>
-    public sealed class ObservableBluetoothLEDevice
+    public sealed class BluetoothLEDeviceWrapper
     {
         /// <summary>
         /// Source for <see cref="BluetoothLEDevice"/>
@@ -71,19 +71,19 @@ namespace UnityUWPBTLEPlugin
         /// <summary>
         /// Source for <see cref="Services"/>
         /// </summary>
-        private List<ObservableGattDeviceService> _services;
+        private List<GattDeviceServiceWrapper> _services;
 
         /// <summary>
-        /// Initializes a new instance of the<see cref="ObservableBluetoothLEDevice" /> class.
+        /// Initializes a new instance of the<see cref="BluetoothLEDeviceWrapper" /> class.
         /// </summary>
         /// <param name="deviceInfo">The device info that describes this bluetooth device"/></param>
-        public ObservableBluetoothLEDevice(DeviceInformation deviceInfo)
+        public BluetoothLEDeviceWrapper(DeviceInformation deviceInfo)
         {
             DeviceInfo = deviceInfo;
             Name = DeviceInfo.Name;
 
             IsPaired = DeviceInfo.Pairing.IsPaired;
-            _services = new List<ObservableGattDeviceService>();
+            _services = new List<GattDeviceServiceWrapper>();
 
             //LoadGlyph();
         }
@@ -162,7 +162,7 @@ namespace UnityUWPBTLEPlugin
         /// <summary>
         /// Gets the services this device supports
         /// </summary>
-        public IEnumerable<ObservableGattDeviceService> Services
+        public IEnumerable<GattDeviceServiceWrapper> Services
         {
             get { return _services; }
         }
@@ -303,7 +303,7 @@ namespace UnityUWPBTLEPlugin
                         Debug.WriteLine(debugMsg + "GetGattServiceAsync SUCCESS");
                         foreach (var serv in _result.Services)
                         {
-                            _services.Add(new ObservableGattDeviceService(serv));
+                            _services.Add(new GattDeviceServiceWrapper(serv));
                         }
 
                         ret = true;

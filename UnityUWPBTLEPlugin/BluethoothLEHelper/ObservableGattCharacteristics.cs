@@ -23,7 +23,7 @@ namespace UnityUWPBTLEPlugin
     /// <summary>
     /// Wrapper around <see cref="GattCharacteristic"/>  to make it easier to use
     /// </summary>
-    public sealed class ObservableGattCharacteristics
+    public sealed class GattCharacteristicsWrapper
     {
         /// <summary>
         /// Source for <see cref="Characteristic"/>
@@ -58,7 +58,7 @@ namespace UnityUWPBTLEPlugin
         /// <summary>
         /// Source for <see cref="Parent"/>
         /// </summary>
-        private ObservableGattDeviceService _parent;
+        private GattDeviceServiceWrapper _parent;
 
         /// <summary>
         /// Source for <see cref="UUID"/>
@@ -71,11 +71,11 @@ namespace UnityUWPBTLEPlugin
         private string _value;
 
         /// <summary>
-        /// Initializes a new instance of the<see cref="ObservableGattCharacteristics" /> class.
+        /// Initializes a new instance of the<see cref="GattCharacteristicsWrapper" /> class.
         /// </summary>
         /// <param name="characteristic">Characteristic this class wraps</param>
         /// <param name="parent">The parent service that wraps this characteristic</param>
-        public ObservableGattCharacteristics(GattCharacteristic characteristic, ObservableGattDeviceService parent)
+        public GattCharacteristicsWrapper(GattCharacteristic characteristic, GattDeviceServiceWrapper parent)
         {
             Characteristic = characteristic;
             Parent = parent;
@@ -139,7 +139,7 @@ namespace UnityUWPBTLEPlugin
         /// <summary>
         /// Gets or sets the parent service of this characteristic
         /// </summary>
-        public ObservableGattDeviceService Parent
+        public GattDeviceServiceWrapper Parent
         {
             get { return _parent; }
 

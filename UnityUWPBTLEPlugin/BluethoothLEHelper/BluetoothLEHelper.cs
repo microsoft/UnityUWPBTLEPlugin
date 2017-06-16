@@ -84,9 +84,9 @@ namespace UnityUWPBTLEPlugin
             _unusedDevices = new List<DeviceInformation>();
             lock (_bluetoothLeDevicesLock)
             {
-                _BluetoothLeDevices = new ObservableCollection<ObservableBluetoothLEDevice>();
-                _BluetoothLeDevicesAdded = new ObservableCollection<ObservableBluetoothLEDevice>();
-                _BluetoothLeDevicesRemoved = new ObservableCollection<ObservableBluetoothLEDevice>();
+                _BluetoothLeDevices = new ObservableCollection<BluetoothLEDeviceWrapper>();
+                _BluetoothLeDevicesAdded = new ObservableCollection<BluetoothLEDeviceWrapper>();
+                _BluetoothLeDevicesRemoved = new ObservableCollection<BluetoothLEDeviceWrapper>();
             }
         }
 
@@ -109,37 +109,37 @@ namespace UnityUWPBTLEPlugin
         /// Gets the list of available bluetooth devices
         /// </summary>
         /// 
-        ObservableCollection<ObservableBluetoothLEDevice> _BluetoothLeDevices;
-        ObservableCollection<ObservableBluetoothLEDevice> _BluetoothLeDevicesAdded;
-        ObservableCollection<ObservableBluetoothLEDevice> _BluetoothLeDevicesRemoved;
+        ObservableCollection<BluetoothLEDeviceWrapper> _BluetoothLeDevices;
+        ObservableCollection<BluetoothLEDeviceWrapper> _BluetoothLeDevicesAdded;
+        ObservableCollection<BluetoothLEDeviceWrapper> _BluetoothLeDevicesRemoved;
 
-        public IEnumerable<ObservableBluetoothLEDevice> BluetoothLeDevicesAdded
+        public IEnumerable<BluetoothLEDeviceWrapper> BluetoothLeDevicesAdded
         {
             get
             {
                 lock (_bluetoothLeDevicesLock)
                 {
-                    IEnumerable<ObservableBluetoothLEDevice> added = _BluetoothLeDevicesAdded; 
-                    _BluetoothLeDevicesAdded = new ObservableCollection<ObservableBluetoothLEDevice>();
+                    IEnumerable<BluetoothLEDeviceWrapper> added = _BluetoothLeDevicesAdded; 
+                    _BluetoothLeDevicesAdded = new ObservableCollection<BluetoothLEDeviceWrapper>();
                     return added;
                 }
             }
         }
 
-        public IEnumerable<ObservableBluetoothLEDevice> BluetoothLeDevicesRemoved
+        public IEnumerable<BluetoothLEDeviceWrapper> BluetoothLeDevicesRemoved
         {
             get
             {
                 lock (_bluetoothLeDevicesLock)
                 {
-                    IEnumerable<ObservableBluetoothLEDevice> added = _BluetoothLeDevicesRemoved;
-                    _BluetoothLeDevicesRemoved = new ObservableCollection<ObservableBluetoothLEDevice>();
+                    IEnumerable<BluetoothLEDeviceWrapper> added = _BluetoothLeDevicesRemoved;
+                    _BluetoothLeDevicesRemoved = new ObservableCollection<BluetoothLEDeviceWrapper>();
                     return added;
                 }
             }
         }
 
-        public IEnumerable<ObservableBluetoothLEDevice> BluetoothLeDevices
+        public IEnumerable<BluetoothLEDeviceWrapper> BluetoothLeDevices
         {
             get
             {
@@ -153,12 +153,12 @@ namespace UnityUWPBTLEPlugin
         /// <summary>
         /// Gets or sets the selected bluetooth device
         /// </summary>
-        public ObservableBluetoothLEDevice SelectedBluetoothLEDevice { get; set; } = null;
+        public BluetoothLEDeviceWrapper SelectedBluetoothLEDevice { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the selected characteristic
         /// </summary>
-        public ObservableGattCharacteristics SelectedCharacteristic { get; set; } = null;
+        public GattCharacteristicsWrapper SelectedCharacteristic { get; set; } = null;
 
         /// <summary>
         /// Gets a value indicating whether app is currently enumerating
@@ -322,7 +322,7 @@ namespace UnityUWPBTLEPlugin
             {
                 lock (_bluetoothLeDevicesLock)
                 {
-                    foreach (ObservableBluetoothLEDevice d in BluetoothLeDevices)
+                    foreach (BluetoothLEDeviceWrapper d in BluetoothLeDevices)
                     {
                         if (d.BluetoothAddressAsUlong == args.BluetoothAddress)
                         {
@@ -373,7 +373,7 @@ namespace UnityUWPBTLEPlugin
                 // Protect against race condition if the task runs after the app stopped the deviceWatcher.
                 if (sender == _deviceWatcher)
                 {
-                    ObservableBluetoothLEDevice dev;
+                    BluetoothLEDeviceWrapper dev;
 
                     // Need to lock as another DeviceWatcher might be modifying BluetoothLEDevices 
                     lock (_bluetoothLeDevicesLock)
@@ -437,7 +437,7 @@ namespace UnityUWPBTLEPlugin
                 // Protect against race condition if the task runs after the app stopped the deviceWatcher.
                 if (sender == _deviceWatcher)
                 {
-                    ObservableBluetoothLEDevice dev;
+                    BluetoothLEDeviceWrapper dev;
 
                     // Need to lock as another DeviceWatcher might be modifying BluetoothLEDevices 
                     lock (_bluetoothLeDevicesLock)
@@ -499,7 +499,7 @@ namespace UnityUWPBTLEPlugin
             // Make sure device name isn't blank or already present in the list.
             if (deviceInfo.Name != string.Empty)
             {
-                ObservableBluetoothLEDevice dev = new ObservableBluetoothLEDevice(deviceInfo);
+                BluetoothLEDeviceWrapper dev = new BluetoothLEDeviceWrapper(deviceInfo);
 
                 // Let's make it connectible by default, we have error handles in case it doesn't work
                 var connectable = true;

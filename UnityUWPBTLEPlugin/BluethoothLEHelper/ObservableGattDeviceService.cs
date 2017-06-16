@@ -25,13 +25,13 @@ namespace UnityUWPBTLEPlugin
     /// <summary>
     /// Wrapper around <see cref="GattDeviceService"/> to make it easier to use
     /// </summary>
-    public sealed class ObservableGattDeviceService
+    public sealed class GattDeviceServiceWrapper
     {
         /// <summary>
         /// Source for <see cref="Characteristics"/>
         /// </summary>
-        private ObservableCollection<ObservableGattCharacteristics> _characteristics =
-            new ObservableCollection<ObservableGattCharacteristics>();
+        private ObservableCollection<GattCharacteristicsWrapper> _characteristics =
+            new ObservableCollection<GattCharacteristicsWrapper>();
 
         /// <summary>
         /// Source for <see cref="Name"/>
@@ -49,10 +49,10 @@ namespace UnityUWPBTLEPlugin
         private string _uuid;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableGattDeviceService" /> class.
+        /// Initializes a new instance of the <see cref="GattDeviceServiceWrapper" /> class.
         /// </summary>
         /// <param name="service">The service this class wraps</param>
-        public ObservableGattDeviceService(GattDeviceService service)
+        public GattDeviceServiceWrapper(GattDeviceService service)
         {
             Service = service;
             Name = GattUuidsService.ConvertUuidToName(service.Uuid);
@@ -79,7 +79,7 @@ namespace UnityUWPBTLEPlugin
         /// <summary>
         /// Gets or sets all the characteristics of this service
         /// </summary>
-        public IList<ObservableGattCharacteristics> Characteristics
+        public IList<GattCharacteristicsWrapper> Characteristics
         {
             get { return _characteristics; }
         }
@@ -144,7 +144,7 @@ namespace UnityUWPBTLEPlugin
                     //Debug.WriteLine(sb);
                     foreach (GattCharacteristic gattchar in result.Characteristics)
                     {
-                        _characteristics.Add(new ObservableGattCharacteristics(gattchar, this));
+                        _characteristics.Add(new GattCharacteristicsWrapper(gattchar, this));
                     }
                 }
                 else if (result.Status == GattCommunicationStatus.Unreachable)
