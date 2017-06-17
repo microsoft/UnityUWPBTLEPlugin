@@ -9,10 +9,9 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
-#if UNITY_WSA_10_0 && !UNITY_EDITOR 
+
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using Windows.Devices.Bluetooth;
@@ -557,4 +556,3 @@ namespace UnityUWPBTLEPlugin
         }
     }
 }
-#endif

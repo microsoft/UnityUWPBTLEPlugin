@@ -139,10 +139,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="UnityUWPBTLEPlugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\UnityUWPBTLEPlugin\bin\x64\Debug\UnityUWPBTLEPlugin.winmd</HintPath>
-    </Reference>
+    <ProjectReference Include="..\UnityUWPBTLEPlugin\UnityUWPBTLEPlugin.csproj">
+      <Project>{e155dfa4-4b27-4064-bbfc-a919e880d481}</Project>
+      <Name>UnityUWPBTLEPlugin</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
