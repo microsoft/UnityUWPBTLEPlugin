@@ -84,9 +84,9 @@ namespace UnityUWPBTLEPlugin
             _unusedDevices = new List<DeviceInformation>();
             lock (_bluetoothLeDevicesLock)
             {
-                _BluetoothLeDevices = new ObservableCollection<BluetoothLEDeviceWrapper>();
-                _BluetoothLeDevicesAdded = new ObservableCollection<BluetoothLEDeviceWrapper>();
-                _BluetoothLeDevicesRemoved = new ObservableCollection<BluetoothLEDeviceWrapper>();
+                _BluetoothLeDevices = new List<BluetoothLEDeviceWrapper>();
+                _BluetoothLeDevicesAdded = new List<BluetoothLEDeviceWrapper>();
+                _BluetoothLeDevicesRemoved = new List<BluetoothLEDeviceWrapper>();
             }
         }
 
@@ -109,9 +109,9 @@ namespace UnityUWPBTLEPlugin
         /// Gets the list of available bluetooth devices
         /// </summary>
         /// 
-        ObservableCollection<BluetoothLEDeviceWrapper> _BluetoothLeDevices;
-        ObservableCollection<BluetoothLEDeviceWrapper> _BluetoothLeDevicesAdded;
-        ObservableCollection<BluetoothLEDeviceWrapper> _BluetoothLeDevicesRemoved;
+        List<BluetoothLEDeviceWrapper> _BluetoothLeDevices;
+        List<BluetoothLEDeviceWrapper> _BluetoothLeDevicesAdded;
+        List<BluetoothLEDeviceWrapper> _BluetoothLeDevicesRemoved;
 
         public IEnumerable<BluetoothLEDeviceWrapper> BluetoothLeDevicesAdded
         {
@@ -120,7 +120,7 @@ namespace UnityUWPBTLEPlugin
                 lock (_bluetoothLeDevicesLock)
                 {
                     IEnumerable<BluetoothLEDeviceWrapper> added = _BluetoothLeDevicesAdded; 
-                    _BluetoothLeDevicesAdded = new ObservableCollection<BluetoothLEDeviceWrapper>();
+                    _BluetoothLeDevicesAdded = new List<BluetoothLEDeviceWrapper>();
                     return added;
                 }
             }
@@ -133,7 +133,7 @@ namespace UnityUWPBTLEPlugin
                 lock (_bluetoothLeDevicesLock)
                 {
                     IEnumerable<BluetoothLEDeviceWrapper> added = _BluetoothLeDevicesRemoved;
-                    _BluetoothLeDevicesRemoved = new ObservableCollection<BluetoothLEDeviceWrapper>();
+                    _BluetoothLeDevicesRemoved = new List<BluetoothLEDeviceWrapper>();
                     return added;
                 }
             }

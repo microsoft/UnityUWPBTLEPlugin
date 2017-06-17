@@ -122,7 +122,7 @@ namespace UnityUWPBTLEPlugin
         private async void GetAllCharacteristics()
         {
             var sb = new StringBuilder();
-            sb.Append("ObservableGattDeviceService::getAllCharacteristics: ");
+            sb.Append("GattDeviceServiceWrapper::getAllCharacteristics: ");
             sb.Append(Name);
 
             try

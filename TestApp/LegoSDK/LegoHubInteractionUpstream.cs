@@ -16,9 +16,9 @@ namespace LegoSDK
 {
     public partial class LegoHub
     {
-        private void LegoHubCharacteristic_PropertyChanged(ObservableGattCharacteristics sender)
+        private void LegoHubCharacteristic_PropertyChanged(GattCharacteristicsWrapper sender)
         {
-            ObservableGattCharacteristics c = sender as ObservableGattCharacteristics;
+            GattCharacteristicsWrapper c = sender as GattCharacteristicsWrapper;
             Debug.Assert(c != null);
 
             if (c != null)

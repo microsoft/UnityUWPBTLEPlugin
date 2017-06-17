@@ -12,12 +12,12 @@ namespace LegoSDK
 {
     public partial class LegoHub
     {
-        ObservableBluetoothLEDevice theLegoHub;
-        ObservableGattDeviceService LegoHubService;
-        ObservableGattCharacteristics LegoHubCharacteristic;
+        BluetoothLEDeviceWrapper theLegoHub;
+        GattDeviceServiceWrapper LegoHubService;
+        GattCharacteristicsWrapper LegoHubCharacteristic;
         public string DeviceId { get { return theLegoHub.DeviceInfo.Id; } }
 
-        public LegoHub(ObservableBluetoothLEDevice device)
+        public LegoHub(BluetoothLEDeviceWrapper device)
         {
             theLegoHub = device;
         }
