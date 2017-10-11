@@ -259,17 +259,7 @@ namespace UnityUWPBTLEPlugin
                 if (BluetoothLEDevice == null)
                 {
                     // Try to get the cached device (if any) for this id
-
-                    Debug.WriteLine(debugMsg + "Calling BluetoothLEDevice.FromIdAsync");
-
-                    //Either of these forms will work
-                    //BluetoothLEDevice = BluetoothLEDevice.FromIdAsync(DeviceInfo.Id).GetAwaiter().GetResult();
-
-                    var task = Task.Run(() => BluetoothLEDevice.FromIdAsync(DeviceInfo.Id));
-                    task.Wait();
-                    BluetoothLEDevice = task.Result.GetResults();
-
-                    Debug.WriteLine(debugMsg + "Calling BluetoothLEDevice.FromIdAsync done");
+                    BluetoothLEDevice = BluetoothLEDevice.FromIdAsync(DeviceInfo.Id).GetAwaiter().GetResult();
                 }
                 else
                 {
@@ -329,6 +319,14 @@ namespace UnityUWPBTLEPlugin
                 Debugger.Break();
             }
 
+            if (ret)
+            {
+                Debug.Write(debugMsg + "Now connected");
+            }
+            else
+            {
+                Debug.Write(debugMsg + "Not connected");
+            }
             return ret;
         }
 

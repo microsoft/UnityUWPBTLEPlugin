@@ -32,11 +32,6 @@ namespace UnityUWPBTLEPlugin
             "(System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\")";
 
         /// <summary>
-        /// Advertisement watcher used to find bluetooth devices
-        /// </summary>
-        private BluetoothLEAdvertisementWatcher _advertisementWatcher;
-
-        /// <summary>
         /// Lock around the <see cref="BluetoothLeDevices"/>. Used in the Add/Removed/Updated callbacks
         /// </summary>
         private readonly object _bluetoothLeDevicesLock;
@@ -81,12 +76,9 @@ namespace UnityUWPBTLEPlugin
             Init();
             _bluetoothLeDevicesLock = new object();
             _unusedDevices = new List<DeviceInformation>();
-            lock (_bluetoothLeDevicesLock)
-            {
-                _BluetoothLeDevices = new List<BluetoothLEDeviceWrapper>();
-                _BluetoothLeDevicesAdded = new List<BluetoothLEDeviceWrapper>();
-                _BluetoothLeDevicesRemoved = new List<BluetoothLEDeviceWrapper>();
-            }
+            _BluetoothLeDevices = new List<BluetoothLEDeviceWrapper>();
+            _BluetoothLeDevicesAdded = new List<BluetoothLEDeviceWrapper>();
+            _BluetoothLeDevicesRemoved = new List<BluetoothLEDeviceWrapper>();
         }
 
         /// <summary>
@@ -268,14 +260,11 @@ namespace UnityUWPBTLEPlugin
             _deviceWatcher.EnumerationCompleted += DeviceWatcher_EnumerationCompleted;
             _deviceWatcher.Removed += DeviceWatcher_Removed;
             _deviceWatcher.Stopped += DeviceWatcher_Stopped;
-            _advertisementWatcher = new BluetoothLEAdvertisementWatcher();
-            _advertisementWatcher.Received += AdvertisementWatcher_Received;
 
             _BluetoothLeDevices.Clear();
             DevicesChanged = false;
 
             _deviceWatcher.Start();
-            _advertisementWatcher.Start();
             IsEnumerating = true;
             EnumerationFinished = false;
         }
@@ -294,45 +283,12 @@ namespace UnityUWPBTLEPlugin
                 _deviceWatcher.EnumerationCompleted -= DeviceWatcher_EnumerationCompleted;
                 _deviceWatcher.Stopped -= DeviceWatcher_Stopped;
 
-                _advertisementWatcher.Received += AdvertisementWatcher_Received;
-
                 // Stop the watchers
                 _deviceWatcher.Stop();
                 _deviceWatcher = null;
 
-                _advertisementWatcher.Stop();
-                _advertisementWatcher = null;
                 IsEnumerating = false;
                 EnumerationFinished = false;
-            }
-        }
-
-        /// <summary>
-        /// Updates device metadata based on advertisement received
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void AdvertisementWatcher_Received(
-            BluetoothLEAdvertisementWatcher sender,
-            BluetoothLEAdvertisementReceivedEventArgs args
-            )
-        {
-            try
-            {
-                lock (_bluetoothLeDevicesLock)
-                {
-                    foreach (BluetoothLEDeviceWrapper d in BluetoothLeDevices)
-                    {
-                        if (d.BluetoothAddressAsUlong == args.BluetoothAddress)
-                        {
-                            //d.ServiceCount = args.Advertisement.ServiceUuids.Count();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("AdvertisementWatcher_Received: ", ex.Message);
             }
         }
 
@@ -383,13 +339,11 @@ namespace UnityUWPBTLEPlugin
                         if (dev != null)
                         {
                             // Found a device in the list, updating it
-                            //Debug.WriteLine("DeviceWatcher_Updated: Updating '{0}' - {1}", dev.Name, dev.DeviceInfo.Id);
                             dev.Update(deviceInfoUpdate);
                         }
                         else
                         {
                             // Need to add this device. Can't do that here as we have the lock
-                            //Debug.WriteLine("DeviceWatcher_Updated: Need to add {0}", deviceInfoUpdate.Id);
                             addNewDI = true;
                         }
                     }
@@ -404,10 +358,6 @@ namespace UnityUWPBTLEPlugin
                                 // We found this device before.
                                 _unusedDevices.Remove(di);
                                 di.Update(deviceInfoUpdate);
-                            }
-                            else
-                            {
-                                //Debug.WriteLine("DeviceWatcher_Updated: Received DeviceInfoUpdate for a unknown device, skipping");
                             }
                         }
 
@@ -516,7 +466,6 @@ namespace UnityUWPBTLEPlugin
                     {
                         if (BluetoothLeDevices.Contains(dev) == false)
                         {
-                            //Debug.WriteLine("AddDeviceToList: Adding '{0}' - connectible: {1}", dev.Name, connectible);
                             _BluetoothLeDevices.Add(dev);
                             _BluetoothLeDevicesAdded.Add(dev);
                             DevicesChanged = true;
@@ -527,21 +476,18 @@ namespace UnityUWPBTLEPlugin
                 {
                     lock (_bluetoothLeDevicesLock)
                     {
+                        // Found but not adding because it's not connectable
                         _unusedDevices.Add(deviceInfo);
                     }
-                    //Debug.WriteLine(
-                    //    "AddDeviceToList: Found but not adding because it's not connectable '{0}' - connectable: {1}, deviceID: {2}",
-                    //    dev.Name, dev.DeviceInfo.Properties["System.Devices.Aep.Bluetooth.Le.IsConnectable"],
-                    //    dev.DeviceInfo.Id);
                 }
             }
             else
             {
                 lock (_bluetoothLeDevicesLock)
                 {
+                    //Found device without a name
                     _unusedDevices.Add(deviceInfo);
                 }
-                //Debug.WriteLine($"AddDeviceToList: Found device {deviceInfo.Id} without a name. Not displaying.");
             }
         }
 

@@ -139,7 +139,7 @@ namespace TestApp
                 newItem.Text = msg;
                 Feedback.Items.Add(newItem);
                 Feedback.ScrollIntoView(newItem);
-            }).AsTask().Wait();
+            });
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -154,7 +154,7 @@ namespace TestApp
                     () =>
                     {
                         Update();
-                    }).AsTask().Wait();
+                    });
 
             }, period);
 

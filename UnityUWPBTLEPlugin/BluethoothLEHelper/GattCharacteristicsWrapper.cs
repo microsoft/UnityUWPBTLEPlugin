@@ -199,6 +199,9 @@ namespace UnityUWPBTLEPlugin
             }
         }
 
+        /// <summary>
+        /// The raw data of the characteristic
+        /// </summary>
         public byte[] RawData
         {
             get { return _data; }

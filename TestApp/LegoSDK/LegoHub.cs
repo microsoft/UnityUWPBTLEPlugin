@@ -1,4 +1,16 @@
-﻿using System;
+﻿// ******************************************************************
+// Copyright (c) Microsoft. All rights reserved.
+// This code is licensed under the MIT License (MIT).
+// THE CODE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
+// ******************************************************************
+
+using System;
 using System.Collections.Generic;
 
 
@@ -12,6 +24,9 @@ namespace LegoSDK
 {
     public partial class LegoHub
     {
+        static readonly String LegoGATTServiceID = "5667";          // 0x1623
+        static readonly String LegoHubCharacteristicID = "5668";    // 0x1624
+
         BluetoothLEDeviceWrapper theLegoHub;
         GattDeviceServiceWrapper LegoHubService;
         GattCharacteristicsWrapper LegoHubCharacteristic;
@@ -33,7 +48,7 @@ namespace LegoSDK
                 // Found a hub, is it connected?
                 if (theLegoHub.IsConnected)
                 {
-                    Debug.WriteLine("Lego Hub connected");
+                    Debug.WriteLine("Lego Hub already connected");
                     connected = true;
                 }
                 else
@@ -62,6 +77,7 @@ namespace LegoSDK
 
                 if (!connected)
                 {
+                    Debug.WriteLine("Lego Hub wasn't connected, trying to connect");
                     connected = theLegoHub.Connect();
                 }
             }
@@ -80,7 +96,7 @@ namespace LegoSDK
             foreach (var service in theLegoHub.Services)
             {
                 Debug.WriteLine(service.Name);
-                if (service.Name.Contains("5667"))
+                if (service.Name.Contains(LegoGATTServiceID))
                 {
                     LegoHubService = service;
                 }
@@ -88,16 +104,16 @@ namespace LegoSDK
 
             if (LegoHubService != null)
             {
-                ShowFeedback("Lego hub service #1623 found");
+                ShowFeedback($"Lego hub service {LegoGATTServiceID} found");
                 ShowFeedback("Characteristics count: " + LegoHubService.Characteristics.Count);
 
                 foreach (var characteristic in LegoHubService.Characteristics)
                 {
                     ShowFeedback("C Name: " + characteristic.Name);
                     ShowFeedback("C UUID: " + characteristic.UUID);
-                    if (characteristic.Name.Contains("5668"))
+                    if (characteristic.Name.Contains(LegoHubCharacteristicID))
                     {
-                        ShowFeedback("Lego hub characteristic #1624 found");
+                        ShowFeedback($"Lego hub characteristic {LegoHubCharacteristicID} found");
                         LegoHubCharacteristic = characteristic;
                         Debug.WriteLine(LegoHubCharacteristic.Name);
                         bool notifyOk = LegoHubCharacteristic.SetNotify();
@@ -116,9 +132,6 @@ namespace LegoSDK
                         {
                             await GetPortModeInformation((byte)port, 0, LEMessagePortModeInformationRequestType.LEMessagePortModeInformationRequestTypeName);
                         }
-
-                        //await DumpPortModeInformation(); // getting all names
-
                     }
 
                 }
@@ -210,22 +223,6 @@ namespace LegoSDK
         {
             await ActiveMotorCombinedMode(portId);
             await TimedMotorTest();
-        }
-
-
-
-        private async Task DumpPortModeInformation()
-        {
-            // External ports
-            for (byte portId = 0; portId < 50; portId++)
-            {
-                await GetPortModeInformation(portId, 0, LEMessagePortModeInformationRequestType.LEMessagePortModeInformationRequestTypeName);
-            }
-            // internal ports
-            for (byte portId = 50; portId <= 100; portId++)
-            {
-                await GetPortModeInformation(portId, 0, LEMessagePortModeInformationRequestType.LEMessagePortModeInformationRequestTypeName);
-            }
         }
 
         List<Byte> _activePorts = new List<byte>();

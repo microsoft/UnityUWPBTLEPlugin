@@ -1,4 +1,16 @@
-﻿
+﻿// ******************************************************************
+// Copyright (c) Microsoft. All rights reserved.
+// This code is licensed under the MIT License (MIT).
+// THE CODE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+// THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
+// ******************************************************************
+
+
 namespace LegoSDK
 {
     public enum LEMessageType
@@ -240,26 +252,15 @@ namespace LegoSDK
             set { _data = value; }
         }
 
-        public bool BusyEmpty
-        {
-            get { return (byte)(_data & BIT_BUSY_EMPTY) > 0 ? true : false; }
-        }
-        public bool BusyCompleted
-        {
-            get { return (byte)(_data & BIT_BUSY_COMPLETED) > 0 ? true : false; }
-        }
-        public bool Discarded
-        {
-            get { return (byte)(_data & BIT_DISCARDED) > 0 ? true : false; }
-        }
-        public bool Idle
-        {
-            get { return (byte)(_data & BIT_IDLE) > 0 ? true : false; }
-        }
-        public bool BusyFull
-        {
-            get { return (byte)(_data & BIT_BUSY_FULL) > 0 ? true : false; }
-        }
+        public bool BusyEmpty => (_data & BIT_BUSY_EMPTY) > 0;
+
+        public bool BusyCompleted => (_data & BIT_BUSY_COMPLETED) > 0;
+
+        public bool Discarded => (_data & BIT_DISCARDED) > 0;
+
+        public bool Idle => (_data & BIT_IDLE) > 0;
+
+        public bool BusyFull => (_data & BIT_BUSY_FULL) > 0;
 
         public override string ToString()
         {

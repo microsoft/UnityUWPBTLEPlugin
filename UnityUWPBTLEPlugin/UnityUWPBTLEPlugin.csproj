@@ -114,7 +114,6 @@
     <Compile Include="BluethoothLEHelper\BluetoothLEDeviceWrapper.cs" />
     <Compile Include="BluethoothLEHelper\GattCharacteristicsWrapper.cs" />
     <Compile Include="BluethoothLEHelper\GattDeviceServiceWrapper.cs" />
-    <Compile Include="BTLEPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
