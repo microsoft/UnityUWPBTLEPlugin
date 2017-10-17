@@ -28,15 +28,15 @@
             <RowDefinition Height="500"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
-            <Button Content="Enumerate" Click="OnEnumerate" Margin="20, 20, 0, 20"/>
-            <Button Content="Connect service" Click="OnConnectService" Margin="20, 0, 0, 20"/>
-            <Button Content="Color Index Test" Click="OnColorIndexTest" Margin="20, 0, 0, 20"/>
-            <Button Content="Color RGB Test" Click="OnColorRGBTest" Margin="20, 0, 0, 20"/>
-            <Button Content="Internal motor Test" Click="OnBrickMotorTest" Margin="20, 0, 0, 20"/>
-            <Button Content="Port C single motor Test" Click="OnSingleMotorTest" Margin="20, 0, 0, 20"/>
-            <Button Content="Port C single timed motor Test" Click="OnTimedMotorTest" Margin="20, 0, 0, 20"/>
-            <Button Content="Port C single motor tach Test" Click="OnTimedMotorTachTest" Margin="20, 0, 0, 20"/>
-            <Button Content="Port D Read vision sensor " Click="OnPortDVisionTest" Margin="20, 0, 0, 20"/>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal"  Margin="20, 20, 0, 20">
+                    <Button Content="Find Lego Hub" Click="OnFindLego"/>
+                    <Button Content="Find Wonder Workshop Bot" Click="OnFindWW" Margin="20, 20, 0, 20"/>
+                </StackPanel>
+                <Button Content="Connect service" Click="OnConnectService" Margin="20, 0, 0, 20"/>
+            </StackPanel>
+            <StackPanel x:Name="_DeviceContent">
+            </StackPanel>
         </StackPanel>
         <ListBox x:Name="Feedback" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" >
             <ListBoxItem Content="Feedback zone"/>

@@ -80,9 +80,21 @@ namespace TestApp
                 }
             }
         }
-        private async void OnEnumerate(object sender, RoutedEventArgs e)
+
+        enum WhatToFind
         {
-            ShowFeedback("Starting enumerating");
+            Undef=-1,
+            LegoHub,
+            WonderWorkshopBot
+        }
+
+        WhatToFind whatToFind = WhatToFind.Undef;
+
+        private async void OnFindLego(object sender, RoutedEventArgs e)
+        {
+            ShowFeedback("Starting find for lego hub");
+            whatToFind = WhatToFind.LegoHub;
+
             await Windows.System.Threading.ThreadPool.RunAsync(_ =>
             {
                 ble = BluetoothLEHelper.Instance;
@@ -90,50 +102,30 @@ namespace TestApp
             });
         }
 
+        private async void OnFindWW(object sender, RoutedEventArgs e)
+        {
+            ShowFeedback("Starting find for Wonder Workshop Bot");
+            whatToFind = WhatToFind.WonderWorkshopBot;
+
+            await Windows.System.Threading.ThreadPool.RunAsync(_ =>
+            {
+                ble = BluetoothLEHelper.Instance;
+                ble.StartEnumeration();
+            });
+        }
+
+
         private async void OnConnectService(object sender, RoutedEventArgs e)
         {
             await theHub.ConnectService();
         }
 
-        private async void OnColorIndexTest(object sender, RoutedEventArgs e)
-        {
-            await theHub.ColorIndexTest();
-        }
-
-        private async void OnColorRGBTest(object sender, RoutedEventArgs e)
-        {
-            await theHub.ColorRGBTest();
-        }
-
-        private async void OnBrickMotorTest(object sender, RoutedEventArgs e)
-        {
-            await theHub.BrickMotorTest();
-        }
-
-        private async void OnSingleMotorTest(object sender, RoutedEventArgs e)
-        {
-            await theHub.SingleMotorTest();
-        }
-        private async void OnTimedMotorTest(object sender, RoutedEventArgs e)
-        {
-            await theHub.TimedMotorTest();
-        }
-        private async void OnPortDVisionTest(object sender, RoutedEventArgs e)
-        {
-            await theHub.PortDVisionTest(0x02);
-
-        }
-        private async void OnTimedMotorTachTest(object sender, RoutedEventArgs e)
-        {
-            await theHub.TimedMotorTachTest(0x01);
-        }
 
 
-
-        public void ShowFeedback(string msg)
+        public async void ShowFeedback(string msg)
         {
             Debug.WriteLine(msg);
-            Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
                 TextBlock newItem = new TextBlock();
                 newItem.Text = msg;
@@ -148,9 +140,9 @@ namespace TestApp
 
             TimeSpan period = TimeSpan.FromSeconds(1);
 
-            ThreadPoolTimer PeriodicTimer = ThreadPoolTimer.CreatePeriodicTimer((source) =>
+            ThreadPoolTimer PeriodicTimer = ThreadPoolTimer.CreatePeriodicTimer(async (source) =>
             {
-                Dispatcher.RunAsync(CoreDispatcherPriority.High,
+                await Dispatcher.RunAsync(CoreDispatcherPriority.High,
                     () =>
                     {
                         Update();

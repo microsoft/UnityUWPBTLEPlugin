@@ -17,8 +17,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityUWPBTLEPlugin;
 using System.Diagnostics;
-using Windows.Devices.Enumeration;
-using Windows.Devices.Bluetooth;
 
 namespace LegoSDK
 {
@@ -56,24 +54,24 @@ namespace LegoSDK
                     Debug.WriteLine("Lego Hub NOT connected");
                 }
 
-                if (theLegoHub.IsPaired)
-                {
-                    Debug.WriteLine("Lego Hub IsPaired");
-                }
-                else
-                {
-                    Debug.WriteLine("Lego Hub trying to pair");
+                //if (theLegoHub.IsPaired)
+                //{
+                //    Debug.WriteLine("Lego Hub IsPaired");
+                //}
+                //else
+                //{
+                //    Debug.WriteLine("Lego Hub trying to pair");
 
-                    theLegoHub.DoInAppPairing(DevicePairingProtectionLevel.None, null);
-                    if (theLegoHub.IsPaired)
-                    {
-                        Debug.WriteLine("Lego Hub Paired now");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Lego Hub Paired failed");
-                    }
-                }
+                //    theLegoHub.DoInAppPairing(DevicePairingProtectionLevel.None, null);
+                //    if (theLegoHub.IsPaired)
+                //    {
+                //        Debug.WriteLine("Lego Hub Paired now");
+                //    }
+                //    else
+                //    {
+                //        Debug.WriteLine("Lego Hub Paired failed");
+                //    }
+                //}
 
                 if (!connected)
                 {
