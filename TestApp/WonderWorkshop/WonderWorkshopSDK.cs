@@ -1,10 +1,10 @@
 ﻿using UnityUWPBTLEPlugin;
 
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
-using Windows.UI.Xaml;
+using System.Runtime.InteropServices.WindowsRuntime;
+//using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace WonderWorkshop
 {
@@ -27,10 +27,10 @@ namespace WonderWorkshop
             BTLEDevice = device;
         }
 
-        public bool ConnectHub()
+        public bool Connect()
         {
             bool connected = false;
-            Debug.WriteLine("ConnectHub");
+            Debug.WriteLine("Connect");
             if (BTLEDevice != null)
             {
                 Debug.WriteLine("Wonder Workshop DashDot found");
@@ -63,7 +63,7 @@ namespace WonderWorkshop
 
         GattDeviceServiceWrapper GattDeviceService;
 
-        public void OnConnectService(object sender, RoutedEventArgs e)
+        public void ConnectService()
         {
             Debug.WriteLine("Device service count: " + BTLEDevice.ServiceCount);
             foreach (var service in BTLEDevice.Services)
@@ -104,6 +104,7 @@ namespace WonderWorkshop
 
                         //Sensor1Characteristic.PropertyChanged += Sensor1Characteristic_PropertyChanged;
                         Sensor1Characteristic.Characteristic.ValueChanged += Sensor1Characteristic_ValueChanged;
+                        bool notifyOk = Sensor1Characteristic.SetNotify();
 
                         continue;
                     }
@@ -115,7 +116,8 @@ namespace WonderWorkshop
                         Debug.WriteLine(Sensor2Characteristic.Name);
 
                         //Sensor2Characteristic.PropertyChanged += Sensor2Characteristic_PropertyChanged;
-                        Sensor1Characteristic.Characteristic.ValueChanged += Sensor2Characteristic_ValueChanged;
+                        Sensor2Characteristic.Characteristic.ValueChanged += Sensor2Characteristic_ValueChanged;
+                        bool notifyOk = Sensor2Characteristic.SetNotify();
 
                         continue;
                     }
@@ -127,31 +129,108 @@ namespace WonderWorkshop
 
         }
 
-        private void Sensor1Characteristic_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        enum sensor1BytePosition
         {
+            Button = 8,
+            Flags = 11,
 
-            //MainPage.thePage.UpdateSensor1Text(String.Format("DashDot Sensor 1: {0}", e.);
-
-            ShowFeedback("Sensor1Characteristic_PropertyChanged");
-            Debug.WriteLine("Sensor1Characteristic_PropertyChanged");
         }
+
+        enum sensor2BytePositions
+        {
+            LeftDistanceSensor = 6,
+            RightDistanceSnesor = 7,
+            RearDistanceSensor = 8,
+            LeftWheelEncoder = 14, // and 15
+            RightWheelEncoder = 16 // and 17
+
+        }
+
+        private double ConvertToCM(int ticks)
+        {
+            // approx 0.0205 cm per tick
+            // 1200 ticks per rotation
+            // wheel diameter of 7.85cm
+            return ((double)ticks) * 7.85f * System.Math.PI / 1200.0f;
+        }
+
+        bool button1Pressed = false;
+        bool button2Pressed = false;
+        bool button3Pressed = false;
+        bool buttonMainPressed = false;
+
+        public bool Button1Pressed
+        {
+            internal set
+            {
+                if (value != button1Pressed)
+                {
+                    ShowFeedback("Button 1 changed");
+                    button1Pressed = value;
+                }
+            }
+
+            get { return button1Pressed; }
+        }
+        public bool Button2Pressed
+        {
+            internal set
+            {
+                if (value != button2Pressed)
+                {
+                    ShowFeedback("Button 2 changed");
+                    button2Pressed = value;
+                }
+            }
+
+            get { return button2Pressed; }
+        }
+        public bool Button3Pressed
+        {
+            internal set
+            {
+                if (value != button3Pressed)
+                {
+                    ShowFeedback("Button 3 changed");
+                    button3Pressed = value;
+                }
+            }
+
+            get { return button3Pressed; }
+        }
+
+        public bool ButtonMainPressed
+        {
+            internal set
+            {
+                if (value != buttonMainPressed)
+                {
+                    ShowFeedback("Button Main changed");
+                    buttonMainPressed = value;
+                }
+            }
+
+            get { return buttonMainPressed; }
+        }
+
 
         private void Sensor1Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            ShowFeedback("Sensor1Characteristic_ValueChanged");
-            Debug.WriteLine("Sensor1Characteristic_ValueChanged");
-        }
+            //ShowFeedback("Sensor1Characteristic_ValueChanged");
 
-        private void Sensor2Characteristic_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            ShowFeedback("Sensor2Characteristic_PropertyChanged");
-            Debug.WriteLine("Sensor2Characteristic_PropertyChanged");
+            byte[] newValue = args.CharacteristicValue.ToArray();
+
+            int buttonFlags = newValue[(int)sensor1BytePosition.Button];
+
+            ButtonMainPressed = (buttonFlags & (0x10 << 0)) > 0 ? true : false;
+            Button1Pressed = (buttonFlags & (0x10 << 1)) > 0 ? true : false;
+            Button2Pressed = (buttonFlags & (0x10 << 2)) > 0 ? true : false;
+            Button3Pressed = (buttonFlags & (0x10 << 3)) > 0 ? true : false;
         }
 
         private void Sensor2Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            ShowFeedback("Sensor2Characteristic_ValueChanged");
-            Debug.WriteLine("Sensor2Characteristic_ValueChanged");
+            //ShowFeedback("Sensor2Characteristic_ValueChanged");
         }
 
         public async Task SendCommand(Command whatToSend)
@@ -162,7 +241,7 @@ namespace WonderWorkshop
         public void ShowFeedback(string msg)
         {
             Debug.WriteLine(msg);
-            //LegoBTLE.MainPage.thePage.ShowFeedback(msg);
+            TestApp.MainPage.thePage.ShowFeedback(msg);
         }
 
     }

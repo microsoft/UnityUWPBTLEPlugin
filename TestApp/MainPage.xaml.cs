@@ -11,6 +11,7 @@
 // ******************************************************************
 
 using LegoSDK;
+using WonderWorkshop;
 using System;
 using System.Diagnostics;
 using UnityUWPBTLEPlugin;
@@ -33,6 +34,7 @@ namespace TestApp
         private BluetoothLEHelper ble;
 
         private LegoHub theHub;
+        private DotDashBot theRobot;
 
         public MainPage()
         {
@@ -42,6 +44,7 @@ namespace TestApp
         }
         public void Update()
         {
+            bool itemFound = false;
             if (ble != null)
             {
                 if (ble.DevicesChanged)
@@ -50,19 +53,71 @@ namespace TestApp
                     foreach (var theNewDevice in newDeviceList)
                     {
                         ShowFeedback("added: " + theNewDevice.Name);
-                        if (theNewDevice.Name.Contains("LEGO") && theHub is null)
+                        switch (whatToFind)
                         {
-                            ShowFeedback("Found lego hub id: " + theNewDevice.DeviceInfo.Id);
-                            theHub = new LegoHub(theNewDevice);
-                            //theHub.Feedback = feedbackMsgs;
-                            if (theHub.ConnectHub())
-                            {
-                                ShowFeedback("Hub connected");
-                            }
-                            else
-                            {
-                                ShowFeedback("Hub connection failed");
-                            }
+                            case WhatToFind.LegoHub:
+                                {
+                                    if (theNewDevice.Name.Contains("LEGO") && theHub is null)
+                                    {
+                                        ShowFeedback("Found lego hub id: " + theNewDevice.DeviceInfo.Id);
+                                        theHub = new LegoHub(theNewDevice);
+
+                                        // Make persistant BTLE connection
+                                        if (theHub.ConnectHub())
+                                        {
+                                            ShowFeedback("Hub connected");
+
+                                            // Connect to gatt services and properties
+                                            theHub.ConnectService().GetAwaiter();
+
+                                            _DeviceContent.Children.Clear();
+                                            _DeviceContent.Children.Add(new LegoSDK.LegoUX(theHub));
+                                            itemFound = true;
+                                        }
+                                        else
+                                        {
+                                            ShowFeedback("Hub connection failed");
+                                        }
+                                    }
+                                }
+                                break;
+
+                            case WhatToFind.WonderWorkshopBot:
+                                {
+                                    string id = theNewDevice.DeviceInfo.Id;
+                                    if (theNewDevice.Name.Contains("Dan"))
+                                    {
+                                        ShowFeedback("Dash found");
+                                        theRobot = new DotDashBot(theNewDevice);
+
+                                        // Make a persistance BTLE connection
+                                        if (theRobot.Connect())
+                                        {
+                                            ShowFeedback("Robot connection made");
+                                            itemFound = true;
+
+                                            // This hooks up service connections and characteristic updates
+                                            theRobot.ConnectService();
+
+                                        }
+
+                                        _DeviceContent.Children.Clear();
+                                        _DeviceContent.Children.Add(new WonderWorkshop.WWUx(theRobot));
+                                    }
+                                }
+                                break;
+
+                            default:
+                                {
+                                    ShowFeedback("Enumeration when don't know what we are looking for");
+                                }
+                                break;
+                        
+                        }
+
+                        if (itemFound)
+                        {
+                            break;
                         }
                     }
 
@@ -70,12 +125,12 @@ namespace TestApp
                     foreach (var i in removedDeviceList)
                     {
                         ShowFeedback("removed: " + i.Name);
-                        if (theHub != null && theHub.DeviceId == i.DeviceInfo.Id)
-                        {
-                            // removing found hub
-                            ShowFeedback("Removing found lego hub id: " + i.DeviceInfo.Id);
-                            theHub = null;
-                        }
+                        //if (theHub != null && theHub.DeviceId == i.DeviceInfo.Id)
+                        //{
+                        //    // removing found hub
+                        //    ShowFeedback("Removing lego hub id: " + i.DeviceInfo.Id);
+                        //    theHub = null;
+                        //}
                     }
                 }
             }
@@ -113,14 +168,6 @@ namespace TestApp
                 ble.StartEnumeration();
             });
         }
-
-
-        private async void OnConnectService(object sender, RoutedEventArgs e)
-        {
-            await theHub.ConnectService();
-        }
-
-
 
         public async void ShowFeedback(string msg)
         {

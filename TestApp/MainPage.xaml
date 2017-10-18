@@ -33,7 +33,6 @@
                     <Button Content="Find Lego Hub" Click="OnFindLego"/>
                     <Button Content="Find Wonder Workshop Bot" Click="OnFindWW" Margin="20, 20, 0, 20"/>
                 </StackPanel>
-                <Button Content="Connect service" Click="OnConnectService" Margin="20, 0, 0, 20"/>
             </StackPanel>
             <StackPanel x:Name="_DeviceContent">
             </StackPanel>

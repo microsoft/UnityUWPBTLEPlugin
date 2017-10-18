@@ -245,7 +245,7 @@ namespace LegoSDK
         public void ShowFeedback(string msg)
         {
             Debug.WriteLine(msg);
-            //LegoBTLE.MainPage.thePage.ShowFeedback(msg);
+            TestApp.MainPage.thePage.ShowFeedback(msg);
         }
     }
 }
