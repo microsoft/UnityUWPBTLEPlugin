@@ -30,11 +30,11 @@
         <StackPanel Grid.Row="0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal"  Margin="20, 20, 0, 20">
-                    <Button Content="Find Lego Hub" Click="OnFindLego"/>
                     <Button Content="Find Wonder Workshop Bot" Click="OnFindWW" Margin="20, 20, 0, 20"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="_DeviceContent">
+                <Button x:Name="_OnConnectServicesBtn" Content="Connect services" Click="OnConnectServices" IsEnabled="False"/>
             </StackPanel>
         </StackPanel>
         <ListBox x:Name="Feedback" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" >

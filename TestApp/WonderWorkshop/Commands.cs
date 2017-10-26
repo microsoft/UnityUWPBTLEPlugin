@@ -30,7 +30,6 @@ namespace WonderWorkshop
         public void ShowFeedback(string msg)
         {
             Debug.WriteLine(msg);
-            //LegoBTLE.MainPage.thePage.ShowFeedback(msg);
         }
 
 

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using System.Runtime.InteropServices.WindowsRuntime;
-//using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace WonderWorkshop
 {
@@ -63,8 +62,9 @@ namespace WonderWorkshop
 
         GattDeviceServiceWrapper GattDeviceService;
 
-        public void ConnectService()
+        public bool ConnectService()
         {
+            bool connectOk = false;
             Debug.WriteLine("Device service count: " + BTLEDevice.ServiceCount);
             foreach (var service in BTLEDevice.Services)
             {
@@ -80,6 +80,19 @@ namespace WonderWorkshop
                 Debug.WriteLine("DashDot service found");
                 Debug.WriteLine("Characteristics count: " + GattDeviceService.Characteristics.Count);
 
+                int retry = 5;
+                while (GattDeviceService.Characteristics.Count == 0 && retry > 0)
+                {
+                    Task.Delay(500);
+                    retry--;
+                }
+
+                if (GattDeviceService.Characteristics.Count == 0)
+                {
+                    Debug.WriteLine("Characteristics count: " + GattDeviceService.Characteristics.Count);
+                }
+
+                Debug.WriteLine("Characteristics count: " + GattDeviceService.Characteristics.Count);
                 foreach (var characteristic in GattDeviceService.Characteristics)
                 {
                     Debug.WriteLine("C Name: " + characteristic.Name);
@@ -93,6 +106,7 @@ namespace WonderWorkshop
                         Debug.WriteLine(CommandCharacteristic.Name);
                         ShowFeedback("Command characteristic found!");
 
+                        connectOk = true;
                         // Write only characteristic
                         continue;
                     }
@@ -127,6 +141,7 @@ namespace WonderWorkshop
 
             }
 
+            return connectOk;
         }
 
         enum sensor1BytePosition
