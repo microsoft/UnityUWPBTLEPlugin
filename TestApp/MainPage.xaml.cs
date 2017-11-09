@@ -10,7 +10,7 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-using WonderWorkshop;
+using TestApp.Sample;
 using System;
 using System.Diagnostics;
 using UnityUWPBTLEPlugin;
@@ -18,8 +18,6 @@ using Windows.System.Threading;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace TestApp
 {
@@ -32,7 +30,7 @@ namespace TestApp
 
         private BluetoothLEHelper ble;
 
-        private DotDashBot theRobot;
+        private SampleDevice theDevice;
 
         public MainPage()
         {
@@ -42,7 +40,6 @@ namespace TestApp
         }
         public void Update()
         {
-            bool itemFound = false;
             if (ble != null)
             {
                 if (ble.DevicesChanged)
@@ -51,40 +48,32 @@ namespace TestApp
                     foreach (var theNewDevice in newDeviceList)
                     {
                         ShowFeedback("added: " + theNewDevice.Name);
-                        switch (whatToFind)
+                        string id = theNewDevice.DeviceInfo.Id;
+                        if (_Filter.Text.Length > 0)
                         {
-                            case WhatToFind.WonderWorkshopBot:
+                            // Filter defined so only take things that contain the filter name
+                            if (theNewDevice.Name.Contains(_Filter.Text))
+                            {
+                                ShowFeedback("Filtered content found");
+                                theDevice = new SampleDevice(theNewDevice);
+
+                                // Make a persistance BTLE connection
+                                if (theDevice.Connect())
                                 {
-                                    string id = theNewDevice.DeviceInfo.Id;
-                                    if (theNewDevice.Name.Contains("Dan"))
-                                    {
-                                        ShowFeedback("Dash found");
-                                        theRobot = new DotDashBot(theNewDevice);
+                                    ShowFeedback("BTLE connection made");
+                                    _OnConnectServicesBtn.IsEnabled = true;
 
-                                        // Make a persistance BTLE connection
-                                        if (theRobot.Connect())
-                                        {
-                                            ShowFeedback("Robot BTLE connection made");
-                                            itemFound = true;
-                                            _OnConnectServicesBtn.IsEnabled = true;
-                                        }
-
-                                    }
+                                    // Connection made so we are done
+                                    break;
                                 }
-                                break;
-
-                            default:
-                                {
-                                    ShowFeedback("Enumeration when don't know what we are looking for");
-                                }
-                                break;
-                        
+                            }
+                            else
+                            {
+                                // No filter so just list everythign found
+                                ShowFeedback("BTLE Device found: " + theNewDevice.Name);
+                            }
                         }
 
-                        if (itemFound)
-                        {
-                            break;
-                        }
                     }
 
                     var removedDeviceList = ble.BluetoothLeDevicesRemoved;
@@ -96,19 +85,9 @@ namespace TestApp
             }
         }
 
-        enum WhatToFind
-        {
-            Undef=-1,
-            WonderWorkshopBot
-        }
-
-        WhatToFind whatToFind = WhatToFind.Undef;
-
-
         private async void OnFindWW(object sender, RoutedEventArgs e)
         {
-            ShowFeedback("Starting find for Wonder Workshop Bot");
-            whatToFind = WhatToFind.WonderWorkshopBot;
+            ShowFeedback("Starting find for BTLE Devices");
 
             await Windows.System.Threading.ThreadPool.RunAsync(_ =>
             {
@@ -150,12 +129,17 @@ namespace TestApp
         private void OnConnectServices(object sender, RoutedEventArgs e)
         {
             // This hooks up service connections and characteristic updates
-            if (theRobot.ConnectService())
+            if (theDevice.ConnectService())
             {
                 _DeviceContent.Children.Clear();
-                _DeviceContent.Children.Add(new WonderWorkshop.WWUx(theRobot));
+                _DeviceContent.Children.Add(new SampleUX(theDevice));
                 ShowFeedback("Service / Charactersitic connection made");
             }
+        }
+
+        private void OnFilter(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

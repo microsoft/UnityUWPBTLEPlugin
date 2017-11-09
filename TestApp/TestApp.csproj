@@ -99,6 +99,11 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleDevice\Commands.cs" />
+    <Compile Include="SampleDevice\SampleDevice.cs" />
+    <Compile Include="SampleDevice\SampleUX.xaml.cs">
+      <DependentUpon>SampleUX.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WonderWorkshop\Commands.cs" />
     <Compile Include="WonderWorkshop\WonderWorkshopSDK.cs" />
     <Compile Include="WonderWorkshop\WWUx.xaml.cs">
@@ -130,6 +135,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="SampleDevice\SampleUX.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WonderWorkshop\WWUx.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -149,6 +158,7 @@
       <Name>UnityUWPBTLEPlugin</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
