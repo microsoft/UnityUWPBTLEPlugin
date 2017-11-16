@@ -104,11 +104,6 @@
     <Compile Include="SampleDevice\SampleUX.xaml.cs">
       <DependentUpon>SampleUX.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WonderWorkshop\Commands.cs" />
-    <Compile Include="WonderWorkshop\WonderWorkshopSDK.cs" />
-    <Compile Include="WonderWorkshop\WWUx.xaml.cs">
-      <DependentUpon>WWUx.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -136,10 +131,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="SampleDevice\SampleUX.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WonderWorkshop\WWUx.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
