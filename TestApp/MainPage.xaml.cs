@@ -52,15 +52,16 @@ namespace TestApp
                         if (_Filter.Text.Length > 0)
                         {
                             // Filter defined so only take things that contain the filter name
-                            if (theNewDevice.Name.Contains(_Filter.Text))
+                            if (theNewDevice.Name.IndexOf(_Filter.Text, 0, StringComparison.CurrentCultureIgnoreCase) != -1)
                             {
                                 ShowFeedback("Filtered content found");
                                 theDevice = new SampleDevice(theNewDevice);
 
-                                // Make a persistance BTLE connection
+                                // Make a persistent BTLE connection
                                 if (theDevice.Connect())
                                 {
                                     ShowFeedback("BTLE connection made");
+                                    _DeviceInfo.Text = theNewDevice.Name;
                                     _OnConnectServicesBtn.IsEnabled = true;
 
                                     // Connection made so we are done
@@ -69,7 +70,7 @@ namespace TestApp
                             }
                             else
                             {
-                                // No filter so just list everythign found
+                                // No filter so just list everything found
                                 ShowFeedback("BTLE Device found: " + theNewDevice.Name);
                             }
                         }
@@ -129,12 +130,15 @@ namespace TestApp
         private void OnConnectServices(object sender, RoutedEventArgs e)
         {
             // This hooks up service connections and characteristic updates
-            if (theDevice.ConnectService())
+            // NOTE: This will fail unles the UUID's have been updated for your specific devices.
+            int numberServices = 0;
+            if (theDevice.ConnectService(out numberServices))
             {
                 _DeviceContent.Children.Clear();
                 _DeviceContent.Children.Add(new SampleUX(theDevice));
-                ShowFeedback("Service / Charactersitic connection made");
+                ShowFeedback("Service / Characteristic connection made");
             }
+            _ServiceCount.Text = numberServices + " Services Found";
         }
 
         private void OnFilter(object sender, RoutedEventArgs e)

@@ -30,13 +30,18 @@
         <StackPanel Grid.Row="0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal"  Margin="20, 20, 0, 20">
-                    <Button Content="Find BTLE Devices" Click="OnFindWW" Margin="20, 20, 0, 20"/>
                     <TextBlock Text="Filter:" Margin="20, 20, 0, 20"/>
                     <TextBox x:Name="_Filter" Margin="20, 20, 0, 20"/>
+
+                    <Button Content="Find BTLE Devices" Click="OnFindWW" Margin="20, 20, 0, 20"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="_DeviceContent">
+                <TextBlock x:Name="_DeviceInfo"/>
                 <Button x:Name="_OnConnectServicesBtn" Content="Connect services" Click="OnConnectServices" IsEnabled="False"/>
+            </StackPanel>
+            <StackPanel x:Name="_ServiceInfoContent">
+                <TextBlock x:Name="_ServiceCount"/>
             </StackPanel>
         </StackPanel>
         <ListBox x:Name="Feedback" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" >

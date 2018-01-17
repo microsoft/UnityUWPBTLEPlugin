@@ -21,10 +21,11 @@ namespace TestApp.Sample
 {
     public class SampleDevice
     {
-        // These will be from the device manufacturer.  They are just place holders
-        const string sService_UUID = "358407F4-BF93-408A-B128-57515EBAF150";
-        const string sCommandCharacteristic = "7042D954-39BF-4E4F-A24B-0F43C0FA6B94";
-        const string sSensorCharacteristic = "7CFF1AFE-A558-4B8F-81AC-ACF28A21FA89";
+        // These will be from the device manufacturer.  
+        // They are just place holders and MUST be replaced with proper values for the connection code to work.
+        const string sService_UUID = "FA1B5744-771E-44FC-B696-9D49990885DD";
+        const string sCommandCharacteristic = "C341A438-039B-481E-9A8D-1E4595152497";
+        const string sSensorCharacteristic = "8D94678D-3820-4E96-B2B8-A4D9AF776888";
 
         BluetoothLEDeviceWrapper BTLEDevice;
 
@@ -75,9 +76,10 @@ namespace TestApp.Sample
         }
 
         // Connect to the service and then list out the characteristics
-        public bool ConnectService()
+        public bool ConnectService(out int ServiceCount)
         {
             bool connectOk = false;
+            ServiceCount = BTLEDevice.ServiceCount;
             Debug.WriteLine("Device service count: " + BTLEDevice.ServiceCount);
             foreach (var service in BTLEDevice.Services)
             {
@@ -90,7 +92,6 @@ namespace TestApp.Sample
 
             if (GattDeviceService != null)
             {
-                Debug.WriteLine("DashDot service found");
                 Debug.WriteLine("Characteristics count: " + GattDeviceService.Characteristics.Count);
 
                 int retry = 5;
@@ -135,6 +136,13 @@ namespace TestApp.Sample
                 }
 
 
+            }
+
+            if (connectOk != true)
+            {
+                Debug.WriteLine("/// ");
+                Debug.WriteLine("/// Connection FAILED: Did you update the UUID's?");
+                Debug.WriteLine("/// ");
             }
 
             return connectOk;
