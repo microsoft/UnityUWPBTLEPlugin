@@ -130,7 +130,7 @@ namespace TestApp
         private void OnConnectServices(object sender, RoutedEventArgs e)
         {
             // This hooks up service connections and characteristic updates
-            // NOTE: This will fail unles the UUID's have been updated for your specific devices.
+            // NOTE: This will fail unless the UUID's have been updated for your specific devices.
             int numberServices = 0;
             if (theDevice.ConnectService(out numberServices))
             {
