@@ -33,7 +33,7 @@
                     <TextBlock Text="Filter:" Margin="20, 20, 0, 20"/>
                     <TextBox x:Name="_Filter" Margin="20, 20, 0, 20"/>
 
-                    <Button Content="Find BTLE Devices" Click="OnFindWW" Margin="20, 20, 0, 20"/>
+                    <Button Content="Find BTLE Devices" Click="OnFind" Margin="20, 20, 0, 20"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="_DeviceContent">

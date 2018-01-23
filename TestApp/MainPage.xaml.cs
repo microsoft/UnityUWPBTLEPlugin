@@ -38,7 +38,11 @@ namespace TestApp
 
             this.InitializeComponent();
         }
-        public void Update()
+
+        /// <summary>
+        /// Called on a periodic timer to look for changes in the set of bluetooth devices detected.
+        /// </summary>
+        public void UpdateBTLEList()
         {
             if (ble != null)
             {
@@ -54,7 +58,7 @@ namespace TestApp
                             // Filter defined so only take things that contain the filter name
                             if (theNewDevice.Name.IndexOf(_Filter.Text, 0, StringComparison.CurrentCultureIgnoreCase) != -1)
                             {
-                                ShowFeedback("Filtered content found");
+                                ShowFeedback("Filtered BTLE Device found");
                                 theDevice = new SampleDevice(theNewDevice);
 
                                 // Make a persistent BTLE connection
@@ -68,13 +72,12 @@ namespace TestApp
                                     break;
                                 }
                             }
-                            else
-                            {
-                                // No filter so just list everything found
-                                ShowFeedback("BTLE Device found: " + theNewDevice.Name);
-                            }
                         }
-
+                        else
+                        {
+                            // No filter so just list everything found
+                            ShowFeedback("Unfiltered BTLE Device found: " + theNewDevice.Name);
+                        }
                     }
 
                     var removedDeviceList = ble.BluetoothLeDevicesRemoved;
@@ -86,7 +89,12 @@ namespace TestApp
             }
         }
 
-        private async void OnFindWW(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Notify the BTLE Helper to start the enumeration of BTLE Devices
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnFind(object sender, RoutedEventArgs e)
         {
             ShowFeedback("Starting find for BTLE Devices");
 
@@ -97,6 +105,10 @@ namespace TestApp
             });
         }
 
+        /// <summary>
+        /// Used to display to the user some feedback.
+        /// </summary>
+        /// <param name="msg"></param>
         public async void ShowFeedback(string msg)
         {
             Debug.WriteLine(msg);
@@ -109,6 +121,12 @@ namespace TestApp
             });
         }
 
+        /// <summary>
+        /// Called when the page is first loaded.
+        /// Setup a background process to update the list of devices in an async way without blocking the UI thread
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Feedback.Items.Clear();
@@ -120,17 +138,23 @@ namespace TestApp
                 await Dispatcher.RunAsync(CoreDispatcherPriority.High,
                     () =>
                     {
-                        Update();
+                        UpdateBTLEList();
                     });
 
             }, period);
-
         }
 
+        /// <summary>
+        /// This hooks up service connections and characteristic updates
+        ///
+        /// NOTE: This will fail unless the device UUID's have been updated for your specific devices.
+        /// NOTE: Update the SampleDevices.CS file or replace that with your device specific implementation.
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnConnectServices(object sender, RoutedEventArgs e)
         {
-            // This hooks up service connections and characteristic updates
-            // NOTE: This will fail unless the UUID's have been updated for your specific devices.
             int numberServices = 0;
             if (theDevice.ConnectService(out numberServices))
             {
@@ -140,10 +164,5 @@ namespace TestApp
             }
             _ServiceCount.Text = numberServices + " Services Found";
         }
-
-        private void OnFilter(object sender, RoutedEventArgs e)
-        {
-
-        }
-    }
+}
 }
