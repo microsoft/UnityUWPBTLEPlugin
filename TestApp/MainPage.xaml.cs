@@ -18,6 +18,8 @@ using Windows.System.Threading;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TestApp
 {
@@ -28,9 +30,14 @@ namespace TestApp
     {
         public static MainPage thePage;
 
+        // The BTLE helper class
         private BluetoothLEHelper ble;
 
-        private SampleDevice theDevice;
+        // The selected device we are connecting with.
+        private SampleDevice theSelectedDevice;
+
+        // The cached list of BTLE devices we have seen
+        private List<SampleDevice> theCachedDevices = new List<SampleDevice>();
 
         public MainPage()
         {
@@ -41,8 +48,11 @@ namespace TestApp
 
         /// <summary>
         /// Called on a periodic timer to look for changes in the set of bluetooth devices detected.
+        ///  Two things to check:
+        ///  BluetoothLeDevicesAdded, new devices seen since last call
+        ///  BluetoothLeDevicesRemoved, the devices no longer seen 
         /// </summary>
-        public void UpdateBTLEList()
+        public async void Update()
         {
             if (ble != null)
             {
@@ -51,50 +61,110 @@ namespace TestApp
                     var newDeviceList = ble.BluetoothLeDevicesAdded;
                     foreach (var theNewDevice in newDeviceList)
                     {
-                        ShowFeedback("added: " + theNewDevice.Name);
-                        string id = theNewDevice.DeviceInfo.Id;
-                        if (_Filter.Text.Length > 0)
+                        // First see if we already have it in the cache
+                        var item = theCachedDevices.SingleOrDefault(r => r.DeviceInfo.Id == theNewDevice.DeviceInfo.Id);
+                        if (item == null)
                         {
-                            // Filter defined so only take things that contain the filter name
-                            if (theNewDevice.Name.IndexOf(_Filter.Text, 0, StringComparison.CurrentCultureIgnoreCase) != -1)
+                            // new item
+
+                            // Create the wrapper for the BTLE object
+                            SampleDevice newSampleDevice = new SampleDevice(theNewDevice);
+
+                            // Add it to our cache of devices
+                            theCachedDevices.Add(newSampleDevice);
+
+                            bool addToList = false;
+
+                            ShowFeedback("BTLE Device added: " + theNewDevice.Name);
+                            string id = theNewDevice.DeviceInfo.Id;
+                            if (_Filter.Text.Length > 0)
                             {
-                                ShowFeedback("Filtered BTLE Device found");
-                                theDevice = new SampleDevice(theNewDevice);
-
-                                // Make a persistent BTLE connection
-                                if (theDevice.Connect())
+                                // Filter defined so only take things that contain the filter name
+                                if (theNewDevice.Name.Contains(_Filter.Text, StringComparison.OrdinalIgnoreCase))
                                 {
-                                    ShowFeedback("BTLE connection made");
-                                    _DeviceInfo.Text = theNewDevice.Name;
-                                    _OnConnectServicesBtn.IsEnabled = true;
-
-                                    // Connection made so we are done
-                                    break;
+                                    ShowFeedback("Filtered BTLE Device found");
+                                    addToList = true;
                                 }
+                            }
+                            else
+                            {
+                                // No filter so just list everything found
+                                ShowFeedback("BTLE Device found: " + theNewDevice.Name);
+                                addToList = true;
+                            }
+
+                            if (addToList)
+                            {
+                                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                {
+                                // Add it to the list
+                                _Devices.Items.Add(newSampleDevice);
+                                    _Devices.ScrollIntoView(newSampleDevice);
+                                });
                             }
                         }
                         else
                         {
-                            // No filter so just list everything found
-                            ShowFeedback("Unfiltered BTLE Device found: " + theNewDevice.Name);
+                            ShowFeedback("BTLE Duplicate device seen: " + theNewDevice.Name);
                         }
                     }
 
+
+
+                    // For all the removed devices we want to remove them from the display list and cache
                     var removedDeviceList = ble.BluetoothLeDevicesRemoved;
-                    foreach (var i in removedDeviceList)
+                    foreach (var removed in removedDeviceList)
                     {
-                        ShowFeedback("removed: " + i.Name);
+                        var itemToRemove = theCachedDevices.SingleOrDefault(r => r.DeviceInfo.Id == removed.DeviceInfo.Id);
+                        if (itemToRemove != null)
+                        {
+                            // Found it so remove it from the listbox and the cache.
+                            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                            {
+                                // Remove it from the list
+                                _Devices.Items.Remove(itemToRemove);
+                            });
+
+                            // And the cache
+                            theCachedDevices.Remove(itemToRemove);
+
+                            ShowFeedback("removed: " + removed.Name);
+
+                        }
+
+                        //// Look through the cache for this device
+                        //foreach (var device in theSeenDevices)
+                        //{
+                        //    if (device.DeviceInfo.Id == removed.DeviceInfo.Id)
+                        //    {
+                        //        // Found it so remove it from the listbox and the cache.
+                        //        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                        //        {
+                        //            // Remove it from the list
+                        //            _Devices.Items.Remove(device);
+                        //        });
+
+                        //        // And the cache
+                        //        theSeenDevices.Remove(device);
+
+                        //        ShowFeedback("removed: " + removed.Name);
+
+                        //        // Done now
+                        //        break;
+                        //    }
+
+                        //}
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Notify the BTLE Helper to start the enumeration of BTLE Devices
+        /// Called when the users starts the device enumeration
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void OnFind(object sender, RoutedEventArgs e)
+        private async void OnFindDevices(object sender, RoutedEventArgs e)
         {
             ShowFeedback("Starting find for BTLE Devices");
 
@@ -106,7 +176,7 @@ namespace TestApp
         }
 
         /// <summary>
-        /// Used to display to the user some feedback.
+        /// Helper to show user feedback of what is going on.
         /// </summary>
         /// <param name="msg"></param>
         public async void ShowFeedback(string msg)
@@ -122,8 +192,7 @@ namespace TestApp
         }
 
         /// <summary>
-        /// Called when the page is first loaded.
-        /// Setup a background process to update the list of devices in an async way without blocking the UI thread
+        ///  Called when the page is loaded.  Used to setup our pooling of the BTLE device list during enumeration
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -138,31 +207,52 @@ namespace TestApp
                 await Dispatcher.RunAsync(CoreDispatcherPriority.High,
                     () =>
                     {
-                        UpdateBTLEList();
+                        Update();
                     });
 
             }, period);
+
         }
 
         /// <summary>
-        /// This hooks up service connections and characteristic updates
-        ///
-        /// NOTE: This will fail unless the device UUID's have been updated for your specific devices.
-        /// NOTE: Update the SampleDevices.CS file or replace that with your device specific implementation.
-        /// 
+        /// Called when the user trys to connect to the devices services.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnConnectServices(object sender, RoutedEventArgs e)
         {
-            int numberServices = 0;
-            if (theDevice.ConnectService(out numberServices))
+            // This hooks up service connections and characteristic updates
+            if (theSelectedDevice.ConnectService())
             {
+                _ServiceCount.Text = theSelectedDevice.ServiceCount.ToString();
+
                 _DeviceContent.Children.Clear();
-                _DeviceContent.Children.Add(new SampleUX(theDevice));
+                _DeviceContent.Children.Add(new SampleUX(theSelectedDevice));
                 ShowFeedback("Service / Characteristic connection made");
             }
-            _ServiceCount.Text = numberServices + " Services Found";
+        }
+
+        /// <summary>
+        // Called when the user picks a devices to connect to.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnDeviceSelectedChanged(object sender, SelectionChangedEventArgs e)
+        {
+            theSelectedDevice = _Devices.SelectedItem as SampleDevice;
+
+            if (theSelectedDevice != null)
+            {
+                // Make a persistent BTLE connection
+                if (theSelectedDevice.Connect())
+                {
+                    ShowFeedback("BTLE connection made");
+                    _ConnectedDevice.Text = theSelectedDevice.Name;
+                    _OnConnectServicesBtn.IsEnabled = true;
+
+                    // Connection made so we are done
+                }
+            }
         }
 }
 }
