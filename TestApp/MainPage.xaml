@@ -30,13 +30,26 @@
         <StackPanel Grid.Row="0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal"  Margin="20, 20, 0, 20">
-                    <Button Content="Find BTLE Devices" Click="OnFindWW" Margin="20, 20, 0, 20"/>
+                    <Button Content="Find BTLE Devices" Click="OnFindDevices" Margin="20, 20, 0, 20"/>
                     <TextBlock Text="Filter:" Margin="20, 20, 0, 20"/>
                     <TextBox x:Name="_Filter" Margin="20, 20, 0, 20"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel x:Name="_DeviceContent">
-                <Button x:Name="_OnConnectServicesBtn" Content="Connect services" Click="OnConnectServices" IsEnabled="False"/>
+                <ListBox x:Name="_Devices" SelectionChanged="OnDeviceSelectedChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Margin="20,20,0,20">
+                    <TextBlock Text="Connected Device:"/>
+                    <TextBlock x:Name="_ConnectedDevice" Text="NA"/>
+                    <Button x:Name="_OnConnectServicesBtn" Content="Connect services" Click="OnConnectServices" IsEnabled="False"/>
+                    <TextBlock Text="Service Count:"/>
+                    <TextBlock x:Name="_ServiceCount" Text="NA"/>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
         <ListBox x:Name="Feedback" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" >
