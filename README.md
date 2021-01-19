@@ -1,3 +1,5 @@
+# Note: This repo is now archived. It is still available READ ONLY for forking or historical interest.
+
 # UNITYUWPPlugin
 A UWP based BTLE plugin which can be used in UWP application or within Unity to talk to BTLE devices in windows.
 
